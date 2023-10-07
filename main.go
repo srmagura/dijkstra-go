@@ -1,8 +1,11 @@
 // https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 
-package dijkstra_go
+package main
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 var vertices = []int{0, 1, 2, 3, 4, 5}
 
@@ -26,11 +29,11 @@ var edges = []Edge{
 var source = 0
 var target = 3
 
-func main() {
+func findShortestPathCore() []int {
 	dist := make([]float64, len(edges))
 
 	// A value of -1 means "undefined"
-	prev := make([]float64, len(edges))
+	prev := make([]int, len(edges))
 
 	// We use a map data structure as a set. The values in this map are
 	// irrelevant.
@@ -43,4 +46,60 @@ func main() {
 	}
 
 	dist[source] = 0
+
+	for len(Q) > 0 {
+		u := -1
+
+		for v, _ := range Q {
+			if u == -1 || dist[v] < dist[u] {
+				u = v
+			}
+		}
+
+		if u == target {
+			return prev
+		}
+
+		delete(Q, u)
+		fmt.Printf("deleted %d\n", u)
+
+		for _, edge := range edges {
+			var v int
+
+			if edge.v0 == u {
+				v = edge.v1
+			} else if edge.v1 == u {
+				v = edge.v0
+			} else {
+				continue
+			}
+
+			_, ok := Q[v]
+
+			if !ok {
+				continue
+			}
+
+			alt := dist[u] + edge.distance
+
+			if alt < dist[v] {
+				dist[v] = alt
+				prev[v] = u
+			}
+
+		}
+	}
+
+}
+
+func findShortestPath() []int {
+	prev := findShortestPathCore()
+
+	var path []int
+	u := target
+
+	for u != -1 {
+		path = append([]int{u}, path...)
+		u = prev[u]
+	}
 }
