@@ -24,6 +24,8 @@ var edges = []Edge{
 	{4, 5, 10},
 	{2, 5, 13},
 	{3, 5, 14},
+
+	{0, 3, 100},
 }
 
 var source = 0
@@ -50,18 +52,17 @@ func findShortestPathCore() []int {
 	for len(Q) > 0 {
 		u := -1
 
-		for v, _ := range Q {
+		for v := range Q {
 			if u == -1 || dist[v] < dist[u] {
 				u = v
 			}
 		}
 
 		if u == target {
-			return prev
+			break
 		}
 
 		delete(Q, u)
-		fmt.Printf("deleted %d\n", u)
 
 		for _, edge := range edges {
 			var v int
@@ -90,6 +91,7 @@ func findShortestPathCore() []int {
 		}
 	}
 
+	return prev
 }
 
 func findShortestPath() []int {
@@ -101,5 +103,17 @@ func findShortestPath() []int {
 	for u != -1 {
 		path = append([]int{u}, path...)
 		u = prev[u]
+	}
+
+	return path
+}
+
+func main() {
+	path := findShortestPath()
+
+	fmt.Println("The shortest path is:")
+
+	for _, u := range path {
+		fmt.Printf("%d\n", u)
 	}
 }
